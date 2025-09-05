@@ -47,7 +47,7 @@ $ podman pull oci-archive:/tmp/myimage
 
 All tagged images in the repository are pulled.
 
-*IMPORTANT: When using the all-tags flag, Podman does not iterate over the search registries in the **[containers-registries.conf(5)](https://github.com/containers/image/blob/main/docs/containers-registries.conf.5.md)** but always uses docker.io for unqualified image names.*
+*IMPORTANT: When using the all-tags flag, Podman does not respect the search registries or mirrors configured in **[containers-registries.conf(5)](https://github.com/containers/image/blob/main/docs/containers-registries.conf.5.md)**. For unqualified image names (e.g., `fedora`), Podman will use docker.io. For qualified image names (e.g., `quay.io/fedora`), Podman will use the specified registry. This limitation exists because tag listing requires direct registry access and cannot use the same resolution logic as single image pulls.*
 
 @@option arch
 
@@ -89,6 +89,16 @@ Suppress output information when pulling images
 @@option tls-verify
 
 @@option variant.container
+
+## WORKAROUNDS FOR --all-tags LIMITATIONS
+
+When using `--all-tags` with registry mirrors or search registries, consider these workarounds:
+
+1. **Use fully-qualified image names**: Instead of `podman pull --all-tags fedora`, use `podman pull --all-tags registry.example.com/fedora` to directly specify the registry.
+
+2. **Pull from mirror directly**: If you have a local registry mirror, use the mirror's address directly: `podman pull --all-tags 127.0.0.1:5000/fedora`.
+
+3. **Use short-name aliases**: Configure short-name aliases in `short-name-aliases.conf` to point to your preferred registry, then use the alias with `--all-tags`.
 
 ## FILES
 
